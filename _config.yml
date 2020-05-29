@@ -17,7 +17,7 @@ favicon: favicon.ico
 
 repository: drzstart/drzstart.github.io
 github_url: https://github.com/drzstart
-url: https://drzstart.github.io/
+url: https://drzstart.github.io
 enforce_ssl: ityouknow.com
 
 ## Gem
