@@ -2,5 +2,6 @@ _site
 .sass-cache
 .jekyll-metadata
 .idea
-
+.git
+er.name
 _posts/2019/2019-10-08-ali-interview.md
