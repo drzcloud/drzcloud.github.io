@@ -1,4 +1,12 @@
-## 1 自定义函数
+---
+layout: post
+title: [hive入门] - 07 - 自定义函数
+category: hive
+tags: [hive]
+excerpt: 也许，我们根本就是问错了问题
+lock: need
+---
+
 
 **1）Hive 自带了一些函数，比如：max/min等，但是数量有限，自己可以通过自定义UDF来方便的扩展。**
 
