@@ -10,8 +10,8 @@ title:  青枫浦上Ovo
 subtitle: 分享技术，品味人生
 name: 青枫浦上Ovo 
 email: 65216@163.com
-description: 本站是纯洁的微笑的技术分享博客。内容涵盖生活故事、Java后端技术、Spring Boot、Spring Cloud、微服务架构、大数据演进、高可用架构、中间件使用、系统监控等相关的研究与知识分享。
-keywords: ityouknow,纯洁的微笑,Spring,Spring Boot,Spring Cloud,MongoDB,Jvm,Docker,生活故事,架构,大数据,一线,FastDFS,开发者,编程,代码,开源,IT网站,Developer,Programmer,Coder,Geek,IT技术博客,Java,Python,
+description: 
+keywords: 
 encoding: "utf-8"
 favicon: favicon.ico 
 
@@ -57,31 +57,6 @@ menus:
 
 
   -
-    href: /spring-cloud.html
-    label: SCloud
-    target: _self
-
-  -
-    href: /it.html
-    label: 深度
-    target: _self
-
-  -
-    href: /money.html
-    label: 挣钱
-    target: _self   
-
-  -
-    href: /life.html
-    label: 故事
-    target: _self
-
-  -
-    href: /arch.html
-    label: 架构
-    target: _self
-
-  -
     href: /link.html
     label: 友链
     target: _self
@@ -99,23 +74,20 @@ navs:
     label: Home
 
   -
-    href: /cartoon.html
-    label: 漫画
+    href: http://www.justdojava.com
+    label: Java
     target: _self
-
-  -
-    href: /spring-boot.html
-    label: Spring Boot
-    target: _self
-    subnav:
-
+    subnav:  
       -
         subHref: /spring-boot.html
         subLabel: Spring Boot
-
       -
         subHref: /spring-cloud.html
         subLabel: Spring Cloud
+  -
+    href: /linux.html
+    label: Linux
+    target: _self
 
   -
     href: http://www.justdojava.com
@@ -134,18 +106,33 @@ navs:
 
   -
     
-    href: /python.html
-    label: Python
+    href: /hadoop.html
+    label: Hadoop生态
     subnav:
 
       -
-        subHref: /python.html
-        subLabel: Python 教程
+        subHref: /Hadoop.html
+        subLabel: Hadoop 教程
+        
+      -
+        subHref: /hive.html
+        subLabel: hive 技术
+        target: hive
         
       -
         subHref: http://www.justdopython.com
-        subLabel: Python 技术
-        target: _blank
+        subLabel: Zookeeper 技术
+        target: Zookeeper
+      
+      -
+        subHref: http://www.justdopython.com
+        subLabel: Flume 技术
+        target: Flume
+        
+      -
+        subHref: http://www.justdopython.com
+        subLabel: Kafka 技术
+        target: Kafka  
 
   -
     href: /archives.html
