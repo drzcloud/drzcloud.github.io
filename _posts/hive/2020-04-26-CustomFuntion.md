@@ -1,9 +1,9 @@
 ---
 layout: post
-title: [hive入门] - 07 - 自定义函数
+title: 07-自定义函数
 category: hive
 tags: [hive]
-excerpt: 也许，我们根本就是问错了问题
+excerpt: 自定义函数
 lock: need
 ---
 

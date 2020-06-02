@@ -1,4 +1,12 @@
-## Hive数据类型
+---
+layout: post
+title: 02-数据类型
+category: hive
+tags: [hive]
+excerpt: DDL数据定义
+lock: need
+---
+
 
 ### 1 基本数据类型
 

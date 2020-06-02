@@ -1,9 +1,9 @@
 ---
 layout: post
-title: [hive入门] - 08 - 分区表和分桶表
+title: 08-分区表和分桶表
 category: hive
 tags: [hive]
-excerpt: 也许，我们根本就是问错了问题
+excerpt: 分区表和分桶表
 lock: need
 ---
 
