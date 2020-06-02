@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 02-数据类型
+title: Hive入门：02-数据类型
 category: hive
 tags: [hive]
 excerpt: DDL数据定义

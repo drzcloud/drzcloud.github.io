@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 07-自定义函数
+title: Hive入门：07-自定义函数
 category: hive
 tags: [hive]
 excerpt: 自定义函数

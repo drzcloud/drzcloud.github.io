@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 01-Hive安装部署
+title: Hive入门：01-Hive安装部署
 category: hive
 tags: [hive]
 excerpt: Hive安装部署

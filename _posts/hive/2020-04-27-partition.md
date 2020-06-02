@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 08-分区表和分桶表
+title: Hive入门：08-分区表和分桶表
 category: hive
 tags: [hive]
 excerpt: 分区表和分桶表
