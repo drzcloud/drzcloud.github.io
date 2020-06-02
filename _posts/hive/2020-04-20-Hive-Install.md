@@ -1,14 +1,12 @@
 ---
 layout: post
-title: [hive入门] - 01 - Hive安装部署
+title: 01-Hive安装部署
 category: hive
 tags: [hive]
-excerpt: 也许，我们根本就是问错了问题
+excerpt: Hive安装部署
 lock: need
 ---
 
-
-### 1 Hive安装地址
 
 **1）Hive官网地址**
 
