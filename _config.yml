@@ -119,6 +119,11 @@ navs:
         subHref: http://www.justdopython.com
         subLabel: Kafka 技术
         target: Kafka  
+        
+      -
+        subHref: /spark.html
+        subLabel: Spark 技术
+        target: spark  
 
   -
     href: /archives.html
