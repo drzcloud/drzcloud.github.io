@@ -89,20 +89,6 @@ navs:
     label: Linux
     target: _self
 
-  -
-    href: http://www.justdojava.com
-    label: Java
-    target: _blank
-    subnav:
-
-      -
-        subHref: /java.html
-        subLabel: Jvm 系列文章
-        
-      -
-        subHref: http://www.justdojava.com
-        subLabel: Java 极客技术
-        target: _blank
 
   -
     
@@ -121,7 +107,7 @@ navs:
         
       -
         subHref: http://www.justdopython.com
-        subLabel: Zookeeper 技术
+        subLabel: Zookeeper
         target: Zookeeper
       
       -
