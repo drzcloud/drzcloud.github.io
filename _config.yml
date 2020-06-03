@@ -89,44 +89,34 @@ navs:
     label: Linux
     target: _self
 
-
   -
     
     href: /hadoop.html
     label: Hadoop生态
     subnav:
-
       -
         subHref: /Hadoop.html
         subLabel: Hadoop 教程
-        
       -
         subHref: /hive.html
         subLabel: hive 技术
         target: hive
-        
       -
-        subHref: http://www.justdopython.com
+        subHref: #
         subLabel: Zookeeper
-        target: Zookeeper1
-      
+        target: Zookeeper
       -
-        subHref: http://www.justdopython.com
+        subHref: #
         subLabel: Flume 技术
         target: Flume
-        
+      -
+        subHref: #
+        subLabel: Kafka 技术
+        target: Kafka
       -
         subHref: /spark.html
         subLabel: Spark 技术
-        target: spark    
-        
-      -
-        subHref: http://www.justdopython.com
-        subLabel: Kafka1 技术
-        target: Kafka  
-        
-      
-
+        target: spark
   -
     href: /archives.html
     label: Archives

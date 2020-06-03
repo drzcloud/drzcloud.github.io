@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Hive入门：01-Spark概述
+title: Spark入门：01-Spark概述
 category: spark
 tags: [spark]
 excerpt: Spark概述
