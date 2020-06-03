@@ -108,7 +108,7 @@ navs:
       -
         subHref: http://www.justdopython.com
         subLabel: Zookeeper
-        target: Zookeeper
+        target: Zookeeper1
       
       -
         subHref: http://www.justdopython.com
@@ -116,14 +116,16 @@ navs:
         target: Flume
         
       -
-        subHref: http://www.justdopython.com
-        subLabel: Kafka 技术
-        target: Kafka  
-        
-      -
         subHref: /spark.html
         subLabel: Spark 技术
-        target: spark  
+        target: spark    
+        
+      -
+        subHref: http://www.justdopython.com
+        subLabel: Kafka1 技术
+        target: Kafka  
+        
+      
 
   -
     href: /archives.html
