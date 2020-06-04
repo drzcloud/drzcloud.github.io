@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Spark入门：01-Spark快速上手
+title: Spark入门：02-Spark快速上手
 category: spark
 tags: [spark]
 excerpt: Spark快速上手
