@@ -96,10 +96,10 @@ navs:
     subnav:
       -
         subHref: /Hadoop.html
-        subLabel: Hadoop 教程
+        subLabel: Hadoop
       -
         subHref: /hive.html
-        subLabel: hive 技术
+        subLabel: hive
         target: hive
       -
         subHref: #
@@ -107,15 +107,15 @@ navs:
         target: Zookeeper
       -
         subHref: #
-        subLabel: Flume 技术
+        subLabel: Flume
         target: Flume
       -
         subHref: #
-        subLabel: Kafka 技术
+        subLabel: Kafka
         target: Kafka
       -
         subHref: /spark.html
-        subLabel: Spark 技术
+        subLabel: Spark
         target: spark
   -
     href: /archives.html
