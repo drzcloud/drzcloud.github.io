@@ -536,7 +536,7 @@ RDD转换算子：
       根据RDD处理数据的方式不同分为：value类型、双value类型、key-value类型。
 ```
 
-##### 5.5.3.1 map
+##### 1）map
 
 ```sql
 --算子：map(形参)：
@@ -599,7 +599,9 @@ RDD转换算子：
 
 ```
 
-##### 5.5.3.2 mpaPartitions
+![image-20200605222012984](https://lcode-cloudimg.oss-cn-shenzhen.aliyuncs.com/picGO/20200605222013.png)
+
+##### 2）mpaPartitions
 
 ```sql
 --map()算子问题：
@@ -653,7 +655,7 @@ RDD转换算子：
     println(result.collect().mkString(","))
 ```
 
-##### 5.5.3.3 mapPartitionsWithIndex
+##### 3）mapPartitionsWithIndex
 
 ```sql
     1. 算子：mapPartitionsWithIndex (形参)
@@ -703,7 +705,7 @@ val list = List(1,2,3,4)
     println(rdd1.collect().mkString(","))
 ```
 
-##### 5.5.3.4 flatmap
+##### 4）flatmap
 
 ```sql
      1. 算子：flatMap(形参)
@@ -741,7 +743,7 @@ val list = List(1,2,3,4)
     println(rdd1.collect().mkString(","))
 ```
 
-##### 5.5.3.5 glom
+##### 5）glom
 
 ```sql
       1. 算子：glom(形参)
@@ -777,7 +779,7 @@ val list = List(1,2,3,4)
     println(rdd.glom().flatMap(array => List(array.max).iterator).sum())
 ```
 
-##### 5.5.3.6 groupBy
+##### 6）groupBy
 
 ```sql
      --1. 算子：groupBy(形参)
@@ -802,7 +804,7 @@ val list = List(1,2,3,4)
             通过传递参数，改变下游分区的数量。
 ```
 
-- 代码
+- 代码演示
 
 ```scala
     /*
@@ -858,17 +860,25 @@ val list = List(1,2,3,4)
 
 ```
 
-##### 5.5.3.7 filter
+![image-20200605221952440](https://lcode-cloudimg.oss-cn-shenzhen.aliyuncs.com/picGO/20200605221952.png)
 
-```sql
-    --1. 算子：Filter(形参)
-    --2. 形参：(f: T => Boolean)：是一个函数，用法和scala中的fliter类似
+##### 7）filter
+
+- 函数签名
+
+```scala
+def filter(f: T => Boolean): RDD[T]
+```
+
+```scala
+    // 1. 算子：Filter(形参)
+    // 2. 形参：(f: T => Boolean)：是一个函数，用法和scala中的fliter类似
             函数的形参：RDD中的一个一个的数据
             返回值：ture或者false
             true：表示数据被保留下来
             false：表示数据被过滤掉
-    --3. 作用：将数据根据指定的规则进行筛选过滤，符合规则的数据保留，不符合规则的数据丢弃。
-    --4. 特点：
+    // 3. 作用：将数据根据指定的规则进行筛选过滤，符合规则的数据保留，不符合规则的数据丢弃。
+    // 4. 特点：
            a、分区不变
            b、分区内的数据可能不均衡，生产环境下，可能会导致数据倾斜
 ```
@@ -892,5 +902,550 @@ val list = List(1,2,3,4)
       tuple._1.substring(0, 10) == "17/05/2015"
     })
     rdd2.collect().foreach(println)
+```
+
+##### 8）sample
+
+> 根据指定的规则从数据集中抽取数据
+
+- 函数签名
+
+```scala
+def sample(
+  withReplacement: Boolean,
+  fraction: Double,
+  seed: Long = Utils.random.nextLong): RDD[T]
+```
+
+```scala
+// 抽取数据不放回（伯努利算法）
+// 伯努利算法：又叫0、1分布。例如扔硬币，要么正面，要么反面。
+// 具体实现：根据种子和随机算法算出一个数和第二个参数设置几率比较，小于第二个参数要，大于不要
+// 第一个参数：抽取的数据是否放回，false：不放回
+// 第二个参数：抽取的几率，范围在[0,1]之间,0：全不取；1：全取；
+// 第三个参数：随机数种子
+val dataRDD1 = dataRDD.sample(false, 0.5, 1)
+// 抽取数据放回（泊松算法）
+// 第一个参数：抽取的数据是否放回，true：放回；false：不放回
+// 第二个参数：重复数据的几率，范围大于等于0.表示每一个元素被期望抽取到的次数
+// 第三个参数：随机数种子
+val dataRDD2 = dataRDD.sample(true, 2)
+```
+
+- 代码演示
+
+```scala
+val sparkConf: SparkConf = new SparkConf().setMaster("local[*]").setAppName("File-RDD")
+val sc = new SparkContext(sparkConf)
+
+val rdd = sc.makeRDD(List(1, 2, 3, 4, 5, 6))
+val dataRDD: RDD[Int] = rdd.sample(
+      false, 	// 抽取后是否放回
+      0.5,	 	// 数据抽取的几率(不放回的场合),重复抽取的次数(放回的场合)
+      1			// 随机数种子
+)
+```
+
+##### 9）distinct
+
+> 将数据集中重复的数据去重
+
+- 函数签名
+
+```scala
+def distinct()(implicit ord: Ordering[T] = null): RDD[T]
+def distinct(numPartitions: Int)(implicit ord: Ordering[T] = null): RDD[T]
+```
+
+- 代码演示
+
+```scala
+val rdd = sc.makeRDD(List(1, 2, 3, 1, 1, 4))
+val rdd1: RDD[Int] = rdd.distinct()
+// 重写分区
+val rdd2: RDD[Int] = rdd.distinct(2)
+// sout：1,2,3,4
+println(rdd1.collect().mkString(","))
+// sout：4,2,1,3
+println(rdd2.collect().mkString(","))
+```
+
+##### 10）coalesce
+
+> ​	根据数据量缩减分区，用于大数据集过滤后，提高小数据集的执行效率。
+>
+> ​	当spark程序中，存在过多的小任务的时候，可以通过coalesce方法，收缩合并分区，减少分区的个数，减小任务调度成本
+>
+> ​	当数据过滤后，发现数据不够均匀，那么可以缩减分区
+
+- 函数签名
+
+```scala
+def coalesce(numPartitions: Int, shuffle: Boolean = false,
+           partitionCoalescer: Option[PartitionCoalescer] = Option.empty)
+          (implicit ord: Ordering[T] = null)
+  : RDD[T]
+```
+
+- 代码演示
+
+```scala
+val dataRDD = sparkContext.makeRDD(List(1,2,3,4,1,2),6)
+// 使用coalesce算子缩减分区
+val dataRDD1 = dataRDD.coalesce(2)
+// 保存到文件检查缩减后的分区数量
+dataRDD1.saveAsTextFile("output")
+```
+
+##### 11）repartition
+
+>    Coalesce方法默认情况下无法扩大分区，因为默认不会讲数据打乱重新组合，扩大分区是没有意义的。如果想要扩大分区，那么必须使用shuffle，打乱数据，重新组合。
+
+- 函数签名
+
+```scala
+def repartition(numPartitions: Int)(implicit ord: Ordering[T] = null): RDD[T]
+```
+
+- 代码演示
+
+```scala
+val rdd = sc.makeRDD(List(1, 1, 1, 2, 2, 2), 2)
+// rdd.repartition(6) 等同 rdd.coalesce(2,true)
+// 源码：coalesce(numPartitions, shuffle = true)
+// 底层源码还是调用的coalesce算子，第二个参数设置了true，会走shuffle操作
+val value: RDD[Int] = rdd.repartition(6)
+value.saveAsTextFile("output")
+```
+
+**思考一个问题：coalesce和repartition区别？**
+
+​	repartition方法其实就是coalesce方法，只不过肯定使用了shuffle操作。让数据更均衡一些，可以有效防止数据倾斜问题。
+
+​    如果缩减分区，一般就采用coalesce，如果扩大分区，就采用repartition
+
+##### 12）sortBy
+
+> ​	该操作用于排序数据。在排序之前，可以将数据通过f函数进行处理，之后按照f函数处理的结果进行排序，默认为正序排列。排序后新产生的RDD的分区数与原RDD的分区数一致。
+
+- 函数签名
+
+```scala
+def sortBy[K](
+  f: (T) => K,
+  ascending: Boolean = true,
+  numPartitions: Int = this.partitions.length)
+  (implicit ord: Ordering[K], ctag: ClassTag[K]): RDD[T]
+```
+
+- 代码演示
+
+```scala
+// 默认排序规则为 升序
+// sortBy可以通过传递第二个参数改变排序的方式
+// sortBy可以设定第三个参数改变分区。
+val sortRDD: RDD[Int] = rdd.sortBy(num=>num, false)
+println(sortRDD.collect().mkString(","))
+```
+
+##### 13）pipe
+
+> 管道，针对每个分区，都调用一次shell脚本，返回输出的RDD。
+>
+> 注意：shell脚本需要放在计算节点可以访问到的位置
+
+- 函数签名
+
+```scala
+def pipe(command: String): RDD[String]
+```
+
+1. 编写一个脚本，并增加执行权限
+
+```shell
+[root@linux1 data]# vim pipe.sh
+#!/bin/sh
+echo "Start"
+while read LINE; do
+  echo ">>>"${LINE}
+done
+
+[root@linux1 data]# chmod 777 pipe.sh
+```
+
+2. 命令行工具中创建一个只有一个分区的RDD
+
+```scala
+scala> val rdd = sc.makeRDD(List("hi","Hello","how","are","you"), 1)
+```
+
+3. 将脚本作用该RDD并打印
+
+```scala
+scala> rdd.pipe("/opt/module/spark/pipe.sh").collect()
+res18: Array[String] = Array(Start, >>>hi, >>>Hello, >>>how, >>>are, >>>you)
+```
+
+小功能：试试两个分区的数据打印的效果
+
+##### 14）intersection（交集）
+
+> 对源RDD和参数RDD求交集后返回一个新的RDD
+
+- 函数签名
+
+```scala
+def intersection(other: RDD[T]): RDD[T]
+```
+
+- 代码演示
+
+```scala
+val dataRDD1 = sparkContext.makeRDD(List(1,2,3,4))
+val dataRDD2 = sparkContext.makeRDD(List(3,4,5,6))
+// TODO 交集：分区数不变(保留原RDD中分区最大的分区数量)，数据会被打乱重组，shuffle
+val rdd4: RDD[Int] = rdd1.intersection(rdd2)
+// 交集：4,3
+println("交集：" + rdd4.collect().mkString(","))
+```
+
+##### 15）union（并集）
+
+> 对源RDD和参数RDD求并集后返回一个新的RDD
+
+- 函数签名
+
+```scala
+def union(other: RDD[T]): RDD[T]
+```
+
+- 代码演示
+
+```scala
+val dataRDD1 = sparkContext.makeRDD(List(1,2,3,4))
+val dataRDD2 = sparkContext.makeRDD(List(3,4,5,6))
+// TODO 并集：数据合并，分区也会合并
+val rdd3: RDD[Int] = rdd1.union(rdd2)
+// 并集：1,2,3,4,3,4,5,6
+println("并集：" + rdd3.collect().mkString(","))
+```
+
+##### 16）subtract（差集）
+
+> 以一个RDD元素为主，去除两个RDD中重复元素，将其他元素保留下来。求差集
+
+- 函数签名
+
+```scala
+def subtract(other: RDD[T]): RDD[T]
+```
+
+- 代码演示
+
+```scala
+val dataRDD1 = sparkContext.makeRDD(List(1,2,3,4))
+val dataRDD2 = sparkContext.makeRDD(List(3,4,5,6))
+// TODO 差集：数据被打乱重组，shuffle
+// 当调用rdd的subtract方法,以当前rdd的分区为主，所以分区数量等于当前rdd的分区数
+val rdd5: RDD[Int] = rdd1.subtract(rdd2)
+println("差集：" + rdd5.collect().mkString(","))
+```
+
+##### 17）zip（拉链）
+
+> 将两个RDD中的元素，以键值对的形式进行合并。其中，键值对中的Key为第1个RDD中的元素，Value为第2个RDD中的元素。
+
+- 函数签名
+
+```scala
+def zip[U: ClassTag](other: RDD[U]): RDD[(T, U)]
+```
+
+- 代码演示
+
+```scala
+val rdd1: RDD[Int] = sc.makeRDD(List(1,2,3,4),2)
+val rdd2: RDD[Int] = sc.makeRDD(List(3,4,5,6),2)
+// TODO 拉链 : 分区数不变
+// TODO 2个RDD的分区一致,但是数据量相同的场合:
+//   Exception: Can only zip RDDs with same number of elements in each partition
+// TODO 2个RDD的分区不一致，数据量也不相同，但是每个分区数据量一致：
+//   Exception：Can't zip RDDs with unequal numbers of partitions: List(3, 2)
+val rdd6: RDD[(Int, Int)] = rdd1.zip(rdd2)
+```
+
+**总结：**
+
+​	**如果两个RDD数据类型不一致怎么办？**
+
+​	答：intersection（交集）、union（并集）、subtract（差集）会发生错误。zip没有问题，可以进行拉链。
+
+​	**zip如果两个RDD数据分区不一致怎么办？**
+
+​	答：如果数据分区不一致，会发生错误
+
+​	**zip如果两个RDD分区数据数量不一致怎么办？**
+
+​	答：如果数据分区中数据量不一致，也会发生错误。
+
+##### 18）partitionBy
+
+> 将数据按照指定Partitioner重新进行分区。Spark默认的分区器是HashPartitioner
+
+- 函数签名
+
+```scala
+def partitionBy(partitioner: Partitioner): RDD[(K, V)]
+```
+
+- 代码演示
+
+```scala
+// TODO K-V类型的数据操作
+val rdd: RDD[(String, Int)] = sc.makeRDD(List(
+	("a", 1), ("b", 2), ("c", 3)
+))
+
+// TODO Spark中很多方法都是基于Key进行操作，所以数据格式应该为键值对（对偶元组）
+// 如果数据类型为K-V类型，那么Spark会给RDD自动补充很多新的功能(扩展)
+// 隐式转换
+// partitionBy方法来自于PairRDDFunctions类
+// RDD的伴生对象中提供了隐式函数（rddToPairRDDFunctions：Line-2014）可以将RDD[K,V]转换为PairRDDFunctions类
+
+// partitionBy参数为分区器对象
+//    分区器对象：HashPartitioner & RangePartitioner
+
+// HashPartitioner分区规则是当前数据key进行取余操作。
+// TODO HashPartitioner是默认的分区器
+val rdd1: RDD[(String, Int)] = rdd.partitionBy(new HashPartitioner(2))
+// rdd1.saveAsTextFile("output")
+
+// sortBy底层使用了RangePartitioner
+// val part = new RangePartitioner(numPartitions, self, ascending)
+// rdd1.sortBy()
+```
+
+**扩展：**自定义分区器
+
+```scala
+object Spark35_RDD_Operator17 {
+  def main(args: Array[String]): Unit = {
+    // TODO Scala - RDD - 算子（方法）
+
+    val sparkConf = new SparkConf().setMaster("local[*]").setAppName("File - RDD")
+    val sc = new SparkContext(sparkConf)
+
+    // TODO 自定义分区器 - 自己决定数据放置在哪个分区做处理
+    // cba, wnba, nba
+    val rdd = sc.makeRDD(
+      List(
+        ("cba", "消息1"),("cba", "消息2"),("cba", "消息3"),
+        ("nba", "消息4"),("wnba", "消息5"),("nba", "消息6")
+      ),
+      1
+    )
+    val rdd1 = rdd.partitionBy( new MyPartitioner(3) )
+
+    val rdd2 = rdd1.mapPartitionsWithIndex(
+      (index, datas) => {
+        datas.map(
+          data => (index, data)
+        )
+      }
+    )
+    rdd2.collect().foreach(println)
+
+    sc.stop()
+  }
+  
+  // TODO 自定义分区器
+  // 1.和Partitioner发生关联，继承Partitioer
+  class MyPartitioner(num:Int) extends Partitioner {
+    // 获取分区的数量
+    override def numPartitions: Int = {
+      num
+    }
+
+    // 根据数据的key来决定数据在哪个分区中进行处理
+    // 方法的返回值表示分区编号(索引)
+    override def getPartition(key: Any): Int = {
+      key match {
+        case "cba" => 0
+        case _ => 1
+      }
+    }
+  }
+}
+```
+
+##### 19）reduceByKey
+
+> 可以将数据按照相同的Key对Value进行聚合
+
+- 函数签名
+
+```scala
+def reduceByKey(func: (V, V) => V): RDD[(K, V)]
+def reduceByKey(func: (V, V) => V, numPartitions: Int): RDD[(K, V)]
+```
+
+- 代码演示
+
+```scala
+val rdd: RDD[(String, Int)] = sc.makeRDD(
+	List(
+        ("hello", 1), ("scala", 1), ("hello", 1)
+    )
+)
+// TODO reduceByKey
+// reduceByKey 第一个参数表示相同key的value的聚合方式
+// reduceByKey 第二个参数表示聚合后的分区数量
+val rdd1: RDD[(String, Int)] = rdd.reduceByKey(_+_)
+val rdd2: RDD[(String, Int)] = rdd.reduceByKey(_+_,2)
+
+println(rdd1.collect().mkString(","))
+```
+
+![image-20200605221412036](https://lcode-cloudimg.oss-cn-shenzhen.aliyuncs.com/picGO/20200605221412.png)
+
+##### 20）groupByKey
+
+> 将分区的数据直接转换为相同类型的内存数组进行后续处理
+
+- 函数签名
+
+```scala
+def groupByKey(): RDD[(K, Iterable[V])]
+def groupByKey(numPartitions: Int): RDD[(K, Iterable[V])]
+def groupByKey(partitioner: Partitioner): RDD[(K, Iterable[V])]
+```
+
+- 代码演示
+
+```scala
+val rdd: RDD[(String, Int)] = sc.makeRDD(
+    List(
+        ("hello", 1), ("scala", 1), ("hello", 1)
+    )
+)
+// TODO groupBykey：
+// groupBy：根据指定的规则对数据进行分组
+
+// TODO 调用groupByKey后，返回数据的类型为元组
+//  元组的第一个元素表示的是用于分组的key
+//  元组的第二个元素表示的是分组后，相同key的value的集合
+val groupRDD: RDD[(String, Iterable[Int])] = rdd.groupByKey()
+val wordToCount: RDD[(String, Int)] = groupRDD.map {
+    case (word, iter) => {
+        (word, iter.sum)
+    }
+}
+println(wordToCount.collect().mkString(","))
+```
+
+![image-20200605221456175](https://lcode-cloudimg.oss-cn-shenzhen.aliyuncs.com/picGO/20200605221456.png)
+
+==思考一个问题：reduceByKey和groupByKey的区别？==
+
+```
+答：两个算子在实现相同的业务功能时，reduceByKey存在预聚和功能，所以性能比较高，推荐使用。但是，不是说一定就采用这个方法，需要根据场景来选择
+```
+
+##### 21）aggregateByKey
+
+> 将数据根据不同的规则进行分区内计算和分区间计算
+
+- 函数签名
+
+```scala
+def aggregateByKey[U: ClassTag](zeroValue: U)(seqOp: (U, V) => U,
+  combOp: (U, U) => U): RDD[(K, U)]
+```
+
+- 代码演示
+
+```scala
+// TODO 将分区内相同key取最大值，分区间相同key求和
+// TODO 分区内核分区间计算规则不一样。
+// reduceByKey：分区内核分区间计算规则相同
+val rdd = sc.makeRDD(
+	List(
+		("a",1),("b",2),("c",3),
+		("b",4),("c",5),("c",6)
+	),
+	2
+)
+// TODO aggregateByKey：根据key进行数据聚合
+// Scala语法：函数柯里化
+// 方法有两个参数列表需要传递参数
+// 第一个参数列表中传递参数为zeroValue：计算的初始值
+// 第二个传参数列表传递参数为：
+//          seq0p：分区内的计算规则
+//          comb0p：分区间的计算规则
+val value: RDD[(String, Int)] = rdd.aggregateByKey(2)(
+    (x, y) => math.max(x, y),
+    (x, y) => x + y
+)
+// sout：(b,6),(a,2),(c,9)
+println(value.collect().mkString(","))
+```
+
+![image-20200605221900276](https://lcode-cloudimg.oss-cn-shenzhen.aliyuncs.com/picGO/20200605221900.png)
+
+##### 22）foldByKey
+
+> 当分区内计算规则和分区间计算规则相同时，aggregateByKey就可以简化为foldByKey。
+
+- 函数签名
+
+```scala
+def foldByKey(zeroValue: V)(func: (V, V) => V): RDD[(K, V)]
+```
+
+- 代码演示
+
+```scala
+// 如果分区内计算规则和分区间的计算规则都是求和，那么可以计算wordcount
+//    val value: RDD[(String, Int)] = rdd.aggregateByKey(2)(
+//      (x, y) => x + y,
+//      (x, y) => x + y
+//    )
+
+//    val value: RDD[(String, Int)] = rdd.aggregateByKey(0)(_+_,_+_)
+//    println(value.collect().mkString(","))
+
+// 如果分区内计算规则和分区间的计算规则相同，
+// 那么可以将aggregateByKey简化为另外一个方法foldByKey
+// sout：(b,6),(a,2),(c,9)
+val value: RDD[(String, Int)] = rdd.foldByKey(0)(_+_)
+println(value.collect().mkString(","))
+```
+
+##### 23）combineByKey
+
+> ​	最通用的对key-value型rdd进行聚集操作的聚集函数（aggregation function）。类似于aggregate()，combineByKey()允许用户返回值的类型与输入不一致。
+
+- 函数签名
+
+```scala
+def combineByKey[C](
+  createCombiner: V => C,
+  mergeValue: (C, V) => C,
+  mergeCombiners: (C, C) => C): RDD[(K, C)]
+```
+
+- 代码演示
+
+小练习：将数据List(("a", 88), ("b", 95), ("a", 91), ("b", 93), ("a", 95), ("b", 98))求每个key的平均值
+
+```scala
+val list: List[(String, Int)] = List(("a", 88), ("b", 95), ("a", 91), ("b", 93), ("a", 95), ("b", 98))
+val input: RDD[(String, Int)] = sc.makeRDD(list, 2)
+
+val combineRdd: RDD[(String, (Int, Int))] = input.combineByKey(
+    (_, 1),
+    (acc: (Int, Int), v) => (acc._1 + v, acc._2 + 1),
+    (acc1: (Int, Int), acc2: (Int, Int)) => (acc1._1 + acc2._1, acc1._2 + acc2._2)
+)
 ```
 
