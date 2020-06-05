@@ -3,7 +3,7 @@ layout: post
 title: Spark入门：01-Spark概述
 category: spark
 tags: [spark]
-excerpt: Spark概述
+excerpt: Spark是一种基于内存的快速、通用、可扩展的大数据分析计算引擎。
 lock: need
 ---
 

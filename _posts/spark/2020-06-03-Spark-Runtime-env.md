@@ -3,7 +3,7 @@ layout: post
 title: Spark入门：03-Spark运行环境
 category: spark
 tags: [spark]
-excerpt: Spark运行环境
+excerpt: Spark作为一个数据处理框架和计算引擎，被设计在所有常见的集群环境中运行, 在国内工作中主流的环境为Yarn，不过逐渐容器式环境也慢慢流行起来。接下来，我们就分别看看不同环境下Spark的运行...
 lock: need
 ---
 

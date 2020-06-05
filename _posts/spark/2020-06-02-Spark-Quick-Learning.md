@@ -3,7 +3,7 @@ layout: post
 title: Spark入门：02-Spark快速上手
 category: spark
 tags: [spark]
-excerpt: Spark快速上手
+excerpt: 在大数据早期的课程中我们已经学习了MapReduce框架的原理及基本使用，并了解了其底层数据处理的实现方式。接下来，咱们就走进Spark的世界，了解一下它是如何带领我们完成数据处理的。
 lock: need
 ---
 

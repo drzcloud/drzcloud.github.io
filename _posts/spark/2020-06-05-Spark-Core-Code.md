@@ -3,7 +3,7 @@ layout: post
 title: Spark入门：05-Spark核心编码
 category: spark
 tags: [spark]
-excerpt: Spark核心编码
+excerpt: Spark计算框架为了能够进行高并发和高吞吐的数据处理，封装了三大数据结构，用于处理不同的应用场景。
 lock: need
 ---
 

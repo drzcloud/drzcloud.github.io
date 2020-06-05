@@ -3,7 +3,7 @@ layout: post
 title: Spark入门：04-Spark运行架构
 category: spark
 tags: [spark]
-excerpt: Spark运行架构
+excerpt: Spark框架的核心是一个计算引擎，整体来说，它采用了标准 master-slave 的结构...
 lock: need
 ---
 
