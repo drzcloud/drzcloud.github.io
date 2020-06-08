@@ -95,7 +95,7 @@ navs:
     label: Hadoop生态
     subnav:
       -
-        subHref: /Hadoop.html
+        subHref: /hadoop.html
         subLabel: Hadoop
       -
         subHref: /hive.html
