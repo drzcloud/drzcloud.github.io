@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Spark入门：09-Spark广播变量
+title: Spark入门：09-Spark广播变
 category: spark
 tags: [spark]
 excerpt: &nbsp;广播变量用来高效分发较大的对象。向所有工作节点发送一个较大的只读值，以供一个或多个Spark操作使用。
