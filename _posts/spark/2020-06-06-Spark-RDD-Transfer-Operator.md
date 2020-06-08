@@ -1,145 +1,13 @@
 ---
 layout: post
-title: Spark入门：05-Spark核心编码
+title: Spark入门：06-Spark-RDD转换算子
 category: spark
 tags: [spark]
 excerpt: Spark计算框架为了能够进行高并发和高吞吐的数据处理，封装了三大数据结构，用于处理不同的应用场景。
 lock: need
 ---
 
-Spark计算框架为了能够进行高并发和高吞吐的数据处理，封装了三大数据结构，用于处理不同的应用场景。三大数据结构分别是：
-
-- RDD : 弹性分布式数据集
-
-- 累加器：分布式共享只写变量
-
-- 广播变量：分布式共享只读变量
-
-接下来我们一起看看这三大数据结构是如何在数据处理中使用的。
-
-## 5.1 RDD
-
-### 5.1.1 什么是RDD
-
-```sql
--- 什么是RDD?
-弹性分布式数据集，一种数据处理的模型&数据结构，是一个抽象类。如汽车模型，航母模型、手机模型等。
-
--- RDD的特点：
-	1. 可分区：提高消费能力，更适合并发计算，类似kafka的消费者消费数据
-	2. 弹性：变化，可变。
-		a、存储弹性：可以在磁盘和内存之间自动切换；
-		b、容错弹性：数据丢失可以自动回复；
-		c、计算弹性：计算出错后重试机制；
-		d、分区弹性： 根据计算结果动态改变分区的数量。
-     3. 不可变：类似不可变集合
-          RDD只存储计算的逻辑，不存储数据，计算的逻辑是不可变的，一旦改变，则会创建新的RDD；
-     4. RDD ：一个抽象类，需要子类具体实现,说明有很多种数据处理方式
-```
-
-## 5.2 IO
-
-```sql
--- IO流分为：
-          字节流          字符流
-输入流   inputStream       read
-输出流   outPutStream      write
-
-节点流  File+ 字符流/字节流
-处理流  buffer(  File+ 字符流/字节流 )
-
--- 解读如下三张图流程
-图1：使用字节流读取一个文件的内容并打印到控制台，使用一个文件节点流，只能读取一部分数据，然后打印，然后再读取一部分数据，再进行打印，慢；
-图2：增加一个缓冲流，将获取的数据暂时先存放在内存的一个缓冲区内，等到一定的数据量以后，再统一处理；
-图3：发现字节流获取的数据，打印到控制台，我们是不认识的，中间使用一个字节流转字符流，将读取的数据转化为字符流，然后再将字符缓存到内存，待达到一定的数据量以后，再往控制台上打印。
-
-综上，发现，如上的过程属于装饰者模式，前者的结果传递到后者，一层一层的包裹起来。
-```
-
-![image-20200604221413351](https://lcode-cloudimg.oss-cn-shenzhen.aliyuncs.com/picGO/20200604221413.png)
-![image-20200604221320626](https://lcode-cloudimg.oss-cn-shenzhen.aliyuncs.com/picGO/20200604221320.png)
-
-![image-20200604221352619](https://lcode-cloudimg.oss-cn-shenzhen.aliyuncs.com/picGO/20200604221352.png)
-
-## 5.3 RDD执行原理
-
-```sql
--- RDD的执行原理：
-1. 类似IO处理；
-2. 体现装饰者模式，通过new的方式体现装饰者模式；
-3. 延迟加载，RDD只是封装了逻辑，只要当执行算子（如collect()）执行时，才会开始执行。
-
--- 与IO的区别：
-RDD不保存数据，只保留逻辑，但是IO会保存数据
-
--- 如何理解RDD
-不可变集合 --> 增加新的数据 --> 创建新的集合
-RDD --> 扩展新的功能 --> 创建新的RDD
-```
-
-![image-20200604221511071](https://lcode-cloudimg.oss-cn-shenzhen.aliyuncs.com/picGO/20200604221511.png)
-
-```sql
--- 解读RDD：
-1.一个执行器Executor可以有多个core核，默认情况下一个分区产生一个task，一个 task可以被一个core执行，由于一个执行器可以有多个核，所以一个执行器可以执行多个task；
-```
-
-![image-20200604221612259](https://lcode-cloudimg.oss-cn-shenzhen.aliyuncs.com/picGO/20200604221612.png)
-
-## 5.4 RDD的核心属性
-
-### 5.4.1 分区列表
-
-RDD数据结构中存在分区列表，用于执行任务时并行计算，是实现分布式计算的重要属性。
-
-```sql
--- 什么是分区列表
-就是RDD中的多个分区
-```
-
-![image-20200604225854664](https://lcode-cloudimg.oss-cn-shenzhen.aliyuncs.com/picGO/20200604225854.png)
-
-### 5.4.2 分区计算函数
-
-```sql
--- 什么是分区计算函数
-Spark在计算时，是使用分区函数对每一个分区进行计算
-```
-
-![image-20200604225648602](https://lcode-cloudimg.oss-cn-shenzhen.aliyuncs.com/picGO/20200604225648.png)
-
-### 5.4.3 RDD之间的依赖关系
-
-RDD是计算模型的封装，当需求中需要将多个计算模型进行组合时，就需要将多个RDD建立依赖关系。
-
-![image-20200604225800723](https://lcode-cloudimg.oss-cn-shenzhen.aliyuncs.com/picGO/20200604225800.png)
-
-### 5.4.4 分区器（可选）
-
-Spark在计算时，是使用分区函数对每一个分区进行计算
-
-```sql
--- 什么是分区器
-数据进入分区的规则，对数据进行分区。
-1. 只能是KV键值对的数据可以进行分区
-2. 默认没有分区器
-```
-
-![image-20200604230017251](https://lcode-cloudimg.oss-cn-shenzhen.aliyuncs.com/picGO/20200604230017.png)
-
-### 5.4.5 首选位置（可选）
-
-```
-计算数据时，可以根据计算节点的状态选择不同的节点位置进行计算
-```
-
-![image-20200604230048390](https://lcode-cloudimg.oss-cn-shenzhen.aliyuncs.com/picGO/20200604230048.png)
-
-![20200603003308](https://lcode-cloudimg.oss-cn-shenzhen.aliyuncs.com/picGO/20200604230102.png)
-
-## 5.5 基础编程
-
-### 5.5.1 创建RDD
+## 1 创建RDD
 
 ```sql
 -- 4种创建RDD的方式：
@@ -149,7 +17,7 @@ Spark在计算时，是使用分区函数对每一个分区进行计算
 4. 直接创建：通过new的方式，spark框架内部会使用
 ```
 
-#### 5.5.1.1 从内存(集合)中创建
+### 1.1 从内存(集合)中创建
 
 ```sql
 -- 方法1：parallelize(形参)
@@ -195,7 +63,7 @@ Spark在计算时，是使用分区函数对每一个分区进行计算
     rdd.saveAsTextFile("output3")
 ```
 
-#### 5.5.1.2 从外部(Disk)存储中创建RDD
+### 1.2 从外部(Disk)存储中创建RDD
 
 ```sql
 -- 从本地磁盘中创建RDD
@@ -229,7 +97,7 @@ Spark在计算时，是使用分区函数对每一个分区进行计算
     rdd.saveAsTextFile("output")
 ```
 
-### 5.5.2 并行度与分区
+## 2 并行度与分区
 
 ```sql
 -- 理解一下什么是并行度和分区
@@ -243,7 +111,7 @@ Spark在计算时，是使用分区函数对每一个分区进行计算
 -- 说明：并行度还和集群的总核数有关，所以资源充足就是指集群可用的核数  core >= task数量，如果可用的core < task数量(即分区数量)，那么并行度就比task小。
 ```
 
-#### 5.5.2.1 从内存中读取数据
+### 2.1 从内存中读取数据
 
 ```sql
 1. 创建RDD的方式为：
@@ -345,7 +213,7 @@ Spark在计算时，是使用分区函数对每一个分区进行计算
 
 ```
 
-#### 5.5.2.2 从文件中读取数据
+### 2.2 从文件中读取数据
 
 1. 单文件读取情况
 
@@ -524,7 +392,7 @@ object Spark_FliePartitions {
 
 ```
 
-#### 5.5.3 RDD算子
+## 3 RDD转换算子
 
 ```sql
 RDD转换算子：
@@ -536,7 +404,7 @@ RDD转换算子：
       根据RDD处理数据的方式不同分为：value类型、双value类型、key-value类型。
 ```
 
-##### 1）map
+### 1）map
 
 ```sql
 --算子：map(形参)：
@@ -601,7 +469,7 @@ RDD转换算子：
 
 ![image-20200605222012984](https://lcode-cloudimg.oss-cn-shenzhen.aliyuncs.com/picGO/20200605222013.png)
 
-##### 2）mpaPartitions
+### 2）mpaPartitions
 
 ```sql
 --map()算子问题：
@@ -655,7 +523,7 @@ RDD转换算子：
     println(result.collect().mkString(","))
 ```
 
-##### 3）mapPartitionsWithIndex
+### 3）mapPartitionsWithIndex
 
 ```sql
     1. 算子：mapPartitionsWithIndex (形参)
@@ -705,7 +573,7 @@ val list = List(1,2,3,4)
     println(rdd1.collect().mkString(","))
 ```
 
-##### 4）flatmap
+### 4）flatmap
 
 ```sql
      1. 算子：flatMap(形参)
@@ -743,7 +611,7 @@ val list = List(1,2,3,4)
     println(rdd1.collect().mkString(","))
 ```
 
-##### 5）glom
+### 5）glom
 
 ```sql
       1. 算子：glom(形参)
@@ -779,7 +647,7 @@ val list = List(1,2,3,4)
     println(rdd.glom().flatMap(array => List(array.max).iterator).sum())
 ```
 
-##### 6）groupBy
+### 6）groupBy
 
 ```sql
      --1. 算子：groupBy(形参)
@@ -862,7 +730,7 @@ val list = List(1,2,3,4)
 
 ![image-20200605221952440](https://lcode-cloudimg.oss-cn-shenzhen.aliyuncs.com/picGO/20200605221952.png)
 
-##### 7）filter
+### 7）filter
 
 - 函数签名
 
@@ -904,7 +772,7 @@ def filter(f: T => Boolean): RDD[T]
     rdd2.collect().foreach(println)
 ```
 
-##### 8）sample
+### 8）sample
 
 > 根据指定的规则从数据集中抽取数据
 
@@ -946,7 +814,7 @@ val dataRDD: RDD[Int] = rdd.sample(
 )
 ```
 
-##### 9）distinct
+### 9）distinct
 
 > 将数据集中重复的数据去重
 
@@ -970,7 +838,7 @@ println(rdd1.collect().mkString(","))
 println(rdd2.collect().mkString(","))
 ```
 
-##### 10）coalesce
+### 10）coalesce
 
 > ​	根据数据量缩减分区，用于大数据集过滤后，提高小数据集的执行效率。
 >
@@ -997,7 +865,7 @@ val dataRDD1 = dataRDD.coalesce(2)
 dataRDD1.saveAsTextFile("output")
 ```
 
-##### 11）repartition
+### 11）repartition
 
 >    Coalesce方法默认情况下无法扩大分区，因为默认不会讲数据打乱重新组合，扩大分区是没有意义的。如果想要扩大分区，那么必须使用shuffle，打乱数据，重新组合。
 
@@ -1024,7 +892,7 @@ value.saveAsTextFile("output")
 
 ​    如果缩减分区，一般就采用coalesce，如果扩大分区，就采用repartition
 
-##### 12）sortBy
+### 12）sortBy
 
 > ​	该操作用于排序数据。在排序之前，可以将数据通过f函数进行处理，之后按照f函数处理的结果进行排序，默认为正序排列。排序后新产生的RDD的分区数与原RDD的分区数一致。
 
@@ -1048,7 +916,7 @@ val sortRDD: RDD[Int] = rdd.sortBy(num=>num, false)
 println(sortRDD.collect().mkString(","))
 ```
 
-##### 13）pipe
+### 13）pipe
 
 > 管道，针对每个分区，都调用一次shell脚本，返回输出的RDD。
 >
@@ -1088,7 +956,7 @@ res18: Array[String] = Array(Start, >>>hi, >>>Hello, >>>how, >>>are, >>>you)
 
 小功能：试试两个分区的数据打印的效果
 
-##### 14）intersection（交集）
+### 14）intersection（交集）
 
 > 对源RDD和参数RDD求交集后返回一个新的RDD
 
@@ -1109,7 +977,7 @@ val rdd4: RDD[Int] = rdd1.intersection(rdd2)
 println("交集：" + rdd4.collect().mkString(","))
 ```
 
-##### 15）union（并集）
+### 15）union（并集）
 
 > 对源RDD和参数RDD求并集后返回一个新的RDD
 
@@ -1130,7 +998,7 @@ val rdd3: RDD[Int] = rdd1.union(rdd2)
 println("并集：" + rdd3.collect().mkString(","))
 ```
 
-##### 16）subtract（差集）
+### 16）subtract（差集）
 
 > 以一个RDD元素为主，去除两个RDD中重复元素，将其他元素保留下来。求差集
 
@@ -1151,7 +1019,7 @@ val rdd5: RDD[Int] = rdd1.subtract(rdd2)
 println("差集：" + rdd5.collect().mkString(","))
 ```
 
-##### 17）zip（拉链）
+### 17）zip（拉链）
 
 > 将两个RDD中的元素，以键值对的形式进行合并。其中，键值对中的Key为第1个RDD中的元素，Value为第2个RDD中的元素。
 
@@ -1188,7 +1056,7 @@ val rdd6: RDD[(Int, Int)] = rdd1.zip(rdd2)
 
 ​	答：如果数据分区中数据量不一致，也会发生错误。
 
-##### 18）partitionBy
+### 18）partitionBy
 
 > 将数据按照指定Partitioner重新进行分区。Spark默认的分区器是HashPartitioner
 
@@ -1278,7 +1146,7 @@ object Spark35_RDD_Operator17 {
 }
 ```
 
-##### 19）reduceByKey
+### 19）reduceByKey
 
 > 可以将数据按照相同的Key对Value进行聚合
 
@@ -1308,7 +1176,7 @@ println(rdd1.collect().mkString(","))
 
 ![image-20200605221412036](https://lcode-cloudimg.oss-cn-shenzhen.aliyuncs.com/picGO/20200605221412.png)
 
-##### 20）groupByKey
+### 20）groupByKey
 
 > 将分区的数据直接转换为相同类型的内存数组进行后续处理
 
@@ -1351,7 +1219,7 @@ println(wordToCount.collect().mkString(","))
 答：两个算子在实现相同的业务功能时，reduceByKey存在预聚和功能，所以性能比较高，推荐使用。但是，不是说一定就采用这个方法，需要根据场景来选择
 ```
 
-##### 21）aggregateByKey
+### 21）aggregateByKey
 
 > 将数据根据不同的规则进行分区内计算和分区间计算
 
@@ -1392,7 +1260,7 @@ println(value.collect().mkString(","))
 
 ![image-20200605221900276](https://lcode-cloudimg.oss-cn-shenzhen.aliyuncs.com/picGO/20200605221900.png)
 
-##### 22）foldByKey
+### 22）foldByKey
 
 > 当分区内计算规则和分区间计算规则相同时，aggregateByKey就可以简化为foldByKey。
 
@@ -1421,7 +1289,7 @@ val value: RDD[(String, Int)] = rdd.foldByKey(0)(_+_)
 println(value.collect().mkString(","))
 ```
 
-##### 23）combineByKey
+### 23）combineByKey
 
 > ​	最通用的对key-value型rdd进行聚集操作的聚集函数（aggregation function）。类似于aggregate()，combineByKey()允许用户返回值的类型与输入不一致。
 
@@ -1447,5 +1315,149 @@ val combineRdd: RDD[(String, (Int, Int))] = input.combineByKey(
     (acc: (Int, Int), v) => (acc._1 + v, acc._2 + 1),
     (acc1: (Int, Int), acc2: (Int, Int)) => (acc1._1 + acc2._1, acc1._2 + acc2._2)
 )
+```
+
+### 24）sortByKey
+
+> 在一个(K,V)的RDD上调用，K必须实现Ordered接口，返回一个按照key进行排序的
+
+- 函数签名
+
+```scala
+def sortByKey(ascending: Boolean = true, numPartitions: Int = self.partitions.length) : RDD[(K, V)]
+```
+
+- 代码演示
+
+```scala
+val rdd: RDD[(String, Int)] = sc.makeRDD(
+    List(
+    	("a", 1), ("c", 3), ("b", 2)
+    )
+)
+val sortRDD = rdd.sortByKey()
+println(sortRDD.collect().mkString(","))
+```
+
+自定义排序：
+
+```scala
+object Spark42_RDD_SortByKey {
+  def main(args: Array[String]): Unit = {
+    // TODO Scala - RDD - 算子（方法）
+
+    val sparkConf: SparkConf = new SparkConf().setMaster("local[*]").setAppName("File-RDD")
+    val sc = new SparkContext(sparkConf)
+
+    val rdd = sc.makeRDD(
+      List(
+        (new User(), 1),
+        (new User(), 2),
+        (new User(), 3)
+      )
+    )
+    val sortRDD = rdd.sortByKey()
+    println(sortRDD.collect().mkString(","))
+
+    sc.stop()
+  }
+
+  // 如果自定义key进行排序，需要将key混入特质Ordered
+  class User extends Ordered[User] with Serializable {
+    override def compare(that: User): Int = {
+      1
+    }
+  }
+}
+```
+
+### 25）join
+
+> 在类型为(K,V)和(K,W)的RDD上调用，返回一个相同key对应的所有元素连接在一起的(K,(V,W))的RDD
+
+- 函数签名
+
+```scala
+def join[W](other: RDD[(K, W)]): RDD[(K, (V, W))]
+```
+
+- 代码演示
+
+```scala
+val rdd1 = sc.makeRDD(
+     List(
+     	("a",1), ("b", 2),("a",3)
+     )
+)
+val rdd2 = sc.makeRDD(
+     List(
+     	("a",6),("a",4), ("b", 5)
+     )
+)
+
+// join方法可以将两个rdd中相同的key的value连接在一起
+// join方法性能不太高，能不用尽量不要用。
+val result: RDD[(String, (Int, Int))] = rdd1.join(rdd2)
+
+// println(result.collect().mkString(","))
+result.collect().foreach(println)
+```
+
+### 26）leftOuterJoin
+
+> 类似于SQL语句的左外连接
+
+- 函数签名
+
+```scala
+def leftOuterJoin[W](other: RDD[(K, W)]): RDD[(K, (V, Option[W]))]
+```
+
+- 代码演示
+
+```scala
+val rdd1 = sc.makeRDD(
+	List(
+    	("a",1), ("b", 2),("c",3),("c",4)
+    )
+)
+val rdd2 = sc.makeRDD(
+    List(
+    	("a",4), ("b", 5), ("b", 6)
+    )
+)
+
+// TODO leftOuterJoin
+// TODO rightOuterJoin
+val result: RDD[(String, (Int, Option[Int]))] = rdd1.leftOuterJoin(rdd2)
+```
+
+### 27）cogroup
+
+> 在类型为(K,V)和(K,W)的RDD上调用，返回一个(K,(Iterable<V>,Iterable<W>))类型的RDD
+
+- 函数签名
+
+```scala
+def cogroup[W](other: RDD[(K, W)]): RDD[(K, (Iterable[V], Iterable[W]))]
+```
+
+- 代码演示
+
+```scala
+val rdd1 = sc.makeRDD(
+	List(
+    	("a",1), ("b", 2),("c",3),("c",4)
+    )
+)
+val rdd2 = sc.makeRDD(
+    List(
+    	("a",4), ("b", 5), ("b", 6)
+    )
+)
+
+// cogroup
+val result: RDD[(String, (Iterable[Int], Iterable[Int]))] = rdd1.cogroup(rdd2)
+result.collect().foreach(println)
 ```
 
