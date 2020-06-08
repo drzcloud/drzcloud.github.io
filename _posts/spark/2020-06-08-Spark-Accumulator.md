@@ -7,8 +7,7 @@ excerpt: 累加器用来把Executor端变量信息聚合到Driver端。在Driver
 lock: need
 ---
 
-> ​	累加器用来把Executor端变量信息聚合到Driver端。在Driver程序中定义的变量，在Executor端的每个Task都会得到这个变量的一份新的副本，每个task更新这些副本的值后，传回Driver端进行merge。
->
+​	 累加器用来把Executor端变量信息聚合到Driver端。在Driver程序中定义的变量，在Executor端的每个Task都会得到这个变量的一份新的副本，每个task更新这些副本的值后，传回Driver端进行merge。
 
 ## 1 系统累加器
 
